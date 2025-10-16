@@ -1,0 +1,45 @@
+;; Arquivo de configuração customizado para Nubank Analyzer
+;; Copie e edite este arquivo conforme suas necessidades
+
+{:app {:name "Nubank Analyzer - Custom"
+       :version "2.0.0"
+       :author "Seu Nome"}
+ 
+ :csv {:delimiter \,
+       :quote \"
+       :encoding "UTF-8"
+       :skip-empty-lines true}
+ 
+ :parser {:date-formats ["dd/MM/yyyy" "yyyy-MM-dd" "dd-MM-yyyy"]
+          :currency-locale "pt-BR"
+          :amount-precision 2}
+ 
+ ;; Adicione suas próprias categorias e palavras-chave aqui
+ :categories {"Alimentação" {:keywords ["restaurante" "ifood" "uber eats" "rappi"]
+                             :color "#FF6B6B"
+                             :icon "🍔"}
+              
+              "Transporte" {:keywords ["uber" "99" "taxi" "combustivel" "gasolina"]
+                            :color "#4ECDC4"
+                            :icon "🚗"}
+              
+              ;; Adicione mais categorias conforme necessário
+              "Minha Categoria" {:keywords ["palavra1" "palavra2"]
+                                 :color "#CUSTOM"
+                                 :icon "📦"}}
+ 
+ :report {:formats [:txt :json :edn :csv :html]
+          :default-format :txt
+          :include-charts false
+          :locale "pt-BR"}
+ 
+ :analysis {:detect-duplicates true
+            :duplicate-threshold-hours 24
+            :min-transaction-amount 0.01
+            :outlier-threshold 3.0
+            :trend-period-months 3}
+ 
+ :logging {:level :info  ; :debug :info :warn :error
+           :output :console
+           :file "logs/nubank-analyzer.log"
+           :format :pretty}}
