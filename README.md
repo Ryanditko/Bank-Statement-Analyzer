@@ -1,4 +1,4 @@
-# Nubank Analyzer 💜
+# Clojure Gains 💜
 
 [![Clojure](https://img.shields.io/badge/Clojure-1.11.1-brightgreen.svg)](https://clojure.org/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
