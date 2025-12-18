@@ -94,8 +94,7 @@ Clojure-Script/
 
 ```
 ════════════════════════════════════════════════════════════════════════════
-              ANÁLISE DE TRANSAÇÕES NUBANK
-              Professional Edition v2.0
+              ANÁLISE DE TRANSAÇÕES
 ════════════════════════════════════════════════════════════════════════════
 
 📊 RESUMO GERAL
