@@ -1,15 +1,15 @@
-# Clojure Gains 💜
+# Bank-Statement-Analyzer 💜
 
 [![Clojure](https://img.shields.io/badge/Clojure-1.11.1-brightgreen.svg)](https://clojure.org/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-Sistema profissional de análise de transações bancárias do Nubank, desenvolvido em Clojure com arquitetura modular, validação robusta e múltiplos formatos de exportação.
+Sistema de análise de transações bancárias do Nubank, desenvolvido em Clojure com arquitetura modular, validação e múltiplos formatos de exportação.
 
 ---
 
-## ✨ Funcionalidades
+### Funcionalidades
 
-### 📊 Análise
+### Análise
 - ✅ **Parsing robusto de CSV** com suporte a múltiplos formatos
 - ✅ **Categorização automática** em 14 categorias
 - ✅ **Análise mensal** com estatísticas completas
@@ -19,14 +19,14 @@ Sistema profissional de análise de transações bancárias do Nubank, desenvolv
 - ✅ **Top estabelecimentos** e gastos
 - ✅ **Detecção de outliers** estatísticos
 
-### 📝 Relatórios Multi-formato
+### Relatórios Multi-formato
 - 📄 **TXT** - Formatado para leitura
 - 🔧 **JSON** - Para integração
 - 💾 **EDN** - Formato Clojure
 - 📊 **CSV** - Transações processadas
 - 🌐 **HTML** - Visual interativo
 
-### 🛠️ Recursos
+### Recursos
 - ⚙️ **Configuração externa** em EDN
 - 📋 **Sistema de logging** profissional
 - ✔️ **Validação com Spec**
@@ -36,7 +36,7 @@ Sistema profissional de análise de transações bancárias do Nubank, desenvolv
 
 ---
 
-## 💻 Uso Rápido
+## Uso Rápido
 
 ```powershell
 # Análise básica
@@ -60,7 +60,7 @@ clojure -M -m nubank-analyzer.core --help
 
 ---
 
-## 📁 Estrutura do Projeto
+## Estrutura do Projeto
 
 ```
 Clojure-Script/
@@ -81,7 +81,7 @@ Clojure-Script/
 
 ---
 
-## 🏷️ Categorias Automáticas (14)
+## Categorias Automáticas (14)
 
 🍔 Alimentação • 🚗 Transporte • 📺 Assinaturas • 🛒 Supermercado  
 💊 Saúde • 📚 Educação • 🎬 Lazer • 🛍️ Compras Online  
@@ -90,11 +90,11 @@ Clojure-Script/
 
 ---
 
-## 📊 Exemplo de Saída
+## Exemplo de Saída
 
 ```
 ════════════════════════════════════════════════════════════════════════════
-              ANÁLISE COMPLETA DE TRANSAÇÕES NUBANK
+              ANÁLISE DE TRANSAÇÕES NUBANK
               Professional Edition v2.0
 ════════════════════════════════════════════════════════════════════════════
 
@@ -131,7 +131,7 @@ Clojure-Script/
 
 ---
 
-## ⚙️ Configuração Customizada
+## Configuração Customizada
 
 ```powershell
 # Gerar config padrão
@@ -151,7 +151,7 @@ Edite `my-config.edn` para adicionar categorias customizadas:
 
 ---
 
-## 🧪 Testes
+## Testes
 
 ```powershell
 # Executar todos os testes
@@ -160,7 +160,7 @@ clojure -X:test
 
 ---
 
-## 📱 Exportar do Nubank
+## Exportar do Nubank
 
 1. App Nubank → **Menu** → **Cartão de Crédito**
 2. Selecione a **fatura**
@@ -168,7 +168,7 @@ clojure -X:test
 
 ---
 
-## 🔧 Desenvolvimento REPL
+## Desenvolvimento REPL
 
 ```clojure
 ; Analisar arquivo
@@ -185,12 +185,12 @@ clojure -X:test
 
 ---
 
-## 📜 Licença
+## Licença
 
 Livre para uso pessoal e educacional.
 
 ---
 
-## 🤝 Contribuindo
+## Contribuindo
 
 Pull requests são bem-vindos! Para mudanças importantes, abra uma issue primeiro.
