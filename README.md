@@ -337,5 +337,3 @@ Free for personal and educational use.
 Built with [Clojure](https://clojure.org/) • Testing with [Kaocha](https://github.com/lambdaisland/kaocha)
 
 ---
-
-*Made with ❤️ for better financial insights*
