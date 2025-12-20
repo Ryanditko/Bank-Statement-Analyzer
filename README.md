@@ -1,195 +1,113 @@
-# Bank-Statement-Analyzer 💜
+# Bank Statement Analyzer
 
-[![Clojure](https://img.shields.io/badge/Clojure-1.11.1-brightgreen.svg)](https://clojure.org/)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+A Clojure-based tool for analyzing bank statements from Nubank with comprehensive transaction categorization, statistical analysis, and flexible export formats.
 
-Sistema de análise de transações bancárias do Nubank, desenvolvido em Clojure com arquitetura modular, validação e múltiplos formatos de exportação.
+## Features
 
----
+- **CSV Parsing**: Robust parsing of CSV files with support for multiple formats
+- **Automatic Categorization**: 14 predefined categories with machine learning-based classification
+- **Monthly Analysis**: Detailed statistics including totals, averages, medians, and standard deviation
+- **Recurring Transaction Detection**: Identify recurring transactions and subscriptions
+- **Trend Analysis**: Temporal analysis with trend identification capabilities
+- **Top Spending**: Identify and rank top spending categories and merchants
+- **Statistical Outliers**: Detect unusual transactions and spending patterns
 
-### Funcionalidades
+## Export Formats
 
-### Análise
-- ✅ **Parsing robusto de CSV** com suporte a múltiplos formatos
-- ✅ **Categorização automática** em 14 categorias
-- ✅ **Análise mensal** com estatísticas completas
-- ✅ **Detecção de duplicatas** inteligente
-- ✅ **Transações recorrentes** (assinaturas)
-- ✅ **Análise de tendências** temporais
-- ✅ **Top estabelecimentos** e gastos
-- ✅ **Detecção de outliers** estatísticos
+- **TXT**: Plain text format for reading
+- **JSON**: Structured data for integration
+- **EDN**: Clojure format for advanced processing
+- **CSV**: Processed transactions in tabular format
+- **HTML**: Interactive visual reports
 
-### Relatórios Multi-formato
-- 📄 **TXT** - Formatado para leitura
-- 🔧 **JSON** - Para integração
-- 💾 **EDN** - Formato Clojure
-- 📊 **CSV** - Transações processadas
-- 🌐 **HTML** - Visual interativo
+## Prerequisites
 
-### Recursos
-- ⚙️ **Configuração externa** em EDN
-- 📋 **Sistema de logging** profissional
-- ✔️ **Validação com Spec**
-- 🔍 **Filtros avançados**
-- 🧪 **Testes unitários**
-- 🚀 **CLI completa**
+- Clojure 1.11 or later
+- Java 11 or later
 
----
+## Installation
 
-## Uso Rápido
+Clone the repository:
 
-```powershell
-# Análise básica
-clojure -M -m nubank-analyzer.core -i exemplo-transacoes.csv
-
-# Salvar em HTML
-clojure -M -m nubank-analyzer.core -i transacoes.csv -o relatorio.html -f html
-
-# Exportar todos os formatos
-clojure -M -m nubank-analyzer.core -i transacoes.csv -f all
-
-# Filtrar por categoria
-clojure -M -m nubank-analyzer.core -i transacoes.csv --category "Alimentação"
-
-# Apenas validar
-clojure -M -m nubank-analyzer.core -i transacoes.csv --validate-only
-
-# Ajuda completa
-clojure -M -m nubank-analyzer.core --help
+```bash
+git clone https://github.com/Ryanditko/Bank-Statement-Analyzer.git
+cd Bank-Statement-Analyzer
 ```
 
----
+## Usage
 
-## Estrutura do Projeto
+### Basic Analysis
 
-```
-Clojure-Script/
-├── src/nubank_analyzer/
-│   ├── core.clj          # Orquestração principal
-│   ├── cli.clj           # Interface de comando
-│   ├── config.clj        # Configuração
-│   ├── logger.clj        # Sistema de log
-│   ├── parser.clj        # Parsing de CSV
-│   ├── validation.clj    # Validação Spec
-│   ├── analyzer.clj      # Análise estatística
-│   └── reports.clj       # Geração de relatórios
-├── test/nubank_analyzer/ # Testes unitários
-├── resources/            # Configurações
-├── exemplo-transacoes.csv
-└── deps.edn
+```bash
+clojure -M -m nubank-analyzer.core -i transactions.csv
 ```
 
----
+### With Custom Configuration
 
-## Categorias Automáticas (14)
-
-🍔 Alimentação • 🚗 Transporte • 📺 Assinaturas • 🛒 Supermercado  
-💊 Saúde • 📚 Educação • 🎬 Lazer • 🛍️ Compras Online  
-🔧 Serviços • 📈 Investimentos • 💸 Transferências • 🐾 Pet  
-🏠 Casa • 👔 Vestuário
-
----
-
-## Exemplo de Saída
-
-```
-════════════════════════════════════════════════════════════════════════════
-              ANÁLISE DE TRANSAÇÕES
-════════════════════════════════════════════════════════════════════════════
-
-📊 RESUMO GERAL
-  Total de Transações:      15
-  Valor Total:              R$ 1,701.35
-  Média por Transação:      R$ 113.42
-  Mediana:                  R$ 52.30
-  Desvio Padrão:            R$ 142.58
-
-📅 ANÁLISE MENSAL
-  10/2025
-    Total:           R$ 1,701.35 (15 transações)
-    Média:           R$ 113.42
-    Top 3 categorias:
-      Transferências       R$ 500.00
-      Supermercado         R$ 320.45
-      Transporte           R$ 331.90
-
-🏷️ ANÁLISE POR CATEGORIA
-  Transferências
-    Total:           R$ 500.00 (29.4% do total)
-    Transações:      1 (média: R$ 500.00)
-
-💰 TOP 20 MAIORES GASTOS
-   1. 05/10/2025 | R$ 500.00 | Transferências | PIX Transferencia
-   2. 10/10/2025 | R$ 320.45 | Supermercado | Carrefour Supermerc
-
-🔄 TRANSAÇÕES RECORRENTES
-  Netflix Servicos
-    Valor:           R$ 44.90
-    Ocorrências:     2 vezes
+```bash
+clojure -M -m nubank-analyzer.core -i transactions.csv -c my-config.edn
 ```
 
----
+Edit your `my-config.edn` to add custom categories:
 
-## Configuração Customizada
-
-```powershell
-# Gerar config padrão
-clojure -M -m nubank-analyzer.core --export-config my-config.edn
-
-# Usar config customizada
-clojure -M -m nubank-analyzer.core -i transacoes.csv -c my-config.edn
+```edn
+{:categories {"My Category"
+              {:keywords ["keyword1" "keyword2"]
+               :color "#FF0000"}}}
 ```
 
-Edite `my-config.edn` para adicionar categorias customizadas:
+### Export Formats
+
+Specify the output format and file:
+
+```bash
+clojure -M -m nubank-analyzer.core -i transactions.csv -o report.html -f html
+```
+
+## Extracting Data from Nubank
+
+1. Open Nubank app
+2. Navigate to **Menu** → **Credit Card**
+3. Select desired **invoice/statement**
+4. Click **⋮** → **Export statement** → **CSV**
+5. Use the exported file with this tool
+
+## REPL Development
+
+For interactive development and testing:
 
 ```clojure
-:categories {"Minha Categoria" {:keywords ["palavra1" "palavra2"]
-                                :color "#FF0000"
-                                :icon "📦"}}
+; Load the core module
+(require '[nubank-analyzer.core :as core])
+
+; Analyze a CSV file
+(def analysis (core/analyze-file "transactions.csv"))
+
+; View general statistics
+(get-in analysis [:general :stats])
+
+; Export reports
+(require '[nubank-analyzer.reports :as reports])
+(reports/export-report analysis :html "report.html")
 ```
 
----
+## Testing
 
-## Testes
+Run the test suite:
 
-```powershell
-# Executar todos os testes
+```bash
 clojure -X:test
 ```
 
----
+## License
 
-## Exportar do Nubank
+This project is free for personal and educational use.
 
-1. App Nubank → **Menu** → **Cartão de Crédito**
-2. Selecione a **fatura**
-3. **⋮** → **Exportar fatura** → **CSV**
+## Contributing
 
----
+Contributions are welcome! For major changes, please open an issue first to discuss proposed modifications.
 
-## Desenvolvimento REPL
-
-```clojure
-; Analisar arquivo
-(require '[nubank-analyzer.core :as core])
-(def analysis (core/analyze-file "exemplo-transacoes.csv"))
-
-; Ver estatísticas
-(get-in analysis [:general :stats])
-
-; Exportar
-(require '[nubank-analyzer.reports :as reports])
-(reports/export-report analysis :html "relatorio.html")
-```
-
----
-
-## Licença
-
-Livre para uso pessoal e educacional.
-
----
-
-## Contribuindo
-
-Pull requests são bem-vindos! Para mudanças importantes, abra uma issue primeiro.
+Pull requests should:
+- Include clear commit messages
+- Add tests for new functionality
+- Update documentation as needed
