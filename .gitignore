@@ -1,0 +1,96 @@
+# Clojure / Leiningen
+/target
+/classes
+/checkouts
+pom.xml
+pom.xml.asc
+*.jar
+*.class
+/.lein-*
+/.nrepl-port
+.hgignore
+.hg/
+
+# deps.edn
+/.cpcache
+
+# clj-kondo cache
+.clj-kondo/.cache/
+
+# LSP cache
+.lsp/
+
+# REPL history
+.nrepl-history
+.rebel_readline_history
+
+# Build artifacts
+*.log
+*.tmp
+*.swp
+*~
+.DS_Store
+
+# IDE specific files
+# IntelliJ / Cursive
+.idea/
+*.iml
+*.ipr
+*.iws
+.classpath
+.project
+.settings/
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Emacs
+*~
+\#*\#
+.\#*
+.projectile
+
+# Vim
+*.sw[a-z]
+*.un~
+Session.vim
+.netrwhist
+
+# Application specific
+# Log files
+logs/
+*.log
+
+# Generated reports
+*-report.*
+*-relatorio.*
+reports/
+relatorios/
+
+# Configuration files with sensitive data
+config-local.edn
+secrets.edn
+
+# Test coverage
+coverage/
+.cloverage/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# OS specific
+Thumbs.db
+Desktop.ini
+
+# Runtime data
+*.pid
+*.seed
+*.pid.lock
+
+# Backup files
+*.bak
+*.backup
+*~.nib

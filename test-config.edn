@@ -1,0 +1,315 @@
+{:app
+ {:name "Nubank Analyzer",
+  :version "2.0.0",
+  :author "Bank Statement Analyzer"},
+ :csv
+ {:delimiter \,, :quote \", :encoding "UTF-8", :skip-empty-lines true},
+ :parser
+ {:date-formats ["dd/MM/yyyy" "yyyy-MM-dd" "dd-MM-yyyy"],
+  :currency-locale "pt-BR",
+  :amount-precision 2},
+ :categories
+ {"Entertainment"
+  {:keywords
+   ["cinema"
+    "teatro"
+    "show"
+    "ingresso"
+    "parque"
+    "entertainment"
+    "viagem"
+    "hotel"
+    "airbnb"
+    "booking"
+    "decolar"
+    "travel"
+    "cinemark"
+    "uci"
+    "kinoplex"
+    "evento"
+    "event"
+    "movie"],
+   :color "#FFFFD2",
+   :icon "entertainment"},
+  "Health"
+  {:keywords
+   ["drogaria"
+    "farmacia"
+    "farmácia"
+    "clinica"
+    "clínica"
+    "pharmacy"
+    "hospital"
+    "laboratorio"
+    "laboratório"
+    "consulta"
+    "health"
+    "drogasil"
+    "pacheco"
+    "ultrafarma"
+    "pague menos"
+    "droga raia"
+    "medico"
+    "médico"
+    "dentist"
+    "dentista"
+    "exame"
+    "doctor"],
+   :color "#AA96DA",
+   :icon "health"},
+  "Food"
+  {:keywords
+   ["restaurante"
+    "lanchonete"
+    "padaria"
+    "ifood"
+    "restaurant"
+    "uber eats"
+    "rappi"
+    "mcdonalds"
+    "burger king"
+    "pizza"
+    "açai"
+    "acai"
+    "cafe"
+    "café"
+    "bar"
+    "pub"
+    "subway"
+    "kfc"
+    "outback"
+    "sushi"
+    "japonês"],
+   :color "#FF6B6B",
+   :icon "food"},
+  "Education"
+  {:keywords
+   ["curso"
+    "livro"
+    "livraria"
+    "udemy"
+    "coursera"
+    "course"
+    "faculdade"
+    "escola"
+    "universidade"
+    "material escolar"
+    "education"
+    "alura"
+    "pluralsight"
+    "linkedin learning"
+    "domestika"
+    "school"
+    "university"],
+   :color "#FCBAD3",
+   :icon "education"},
+  "Transport"
+  {:keywords
+   ["uber"
+    "99"
+    "taxi"
+    "metrô"
+    "metro"
+    "onibus"
+    "ônibus"
+    "bus"
+    "passagem"
+    "combustivel"
+    "combustível"
+    "gasolina"
+    "gas"
+    "posto"
+    "ipiranga"
+    "shell"
+    "br petrobras"
+    "estacionamento"
+    "pedágio"
+    "pedagio"
+    "parking"
+    "toll"],
+   :color "#4ECDC4",
+   :icon "transport"},
+  "Investments"
+  {:keywords
+   ["corretora"
+    "btg"
+    "xp"
+    "clear"
+    "rico"
+    "investment"
+    "nuinvest"
+    "easynvest"
+    "inter invest"
+    "tesouro"
+    "cdb"
+    "fundo"
+    "ação"
+    "stock"
+    "fund"],
+   :color "#6BCB77",
+   :icon "investment"},
+  "Transfers"
+  {:keywords
+   ["pix"
+    "transferencia"
+    "transferência"
+    "ted"
+    "doc"
+    "envio"
+    "pagamento"
+    "qr code"
+    "transfer"
+    "payment"],
+   :color "#C7CEEA",
+   :icon "transfer"},
+  "Supermarket"
+  {:keywords
+   ["carrefour"
+    "pão de açucar"
+    "pao de acucar"
+    "extra"
+    "walmart"
+    "mercado"
+    "supermercado"
+    "atacadão"
+    "atacadao"
+    "zaffari"
+    "dia%"
+    "sam's club"
+    "assai"
+    "big box"
+    "nacional"
+    "bompreco"
+    "market"
+    "grocery"],
+   :color "#F38181",
+   :icon "supermarket"},
+  "Pet"
+  {:keywords
+   ["pet"
+    "veterinari"
+    "ração"
+    "racao"
+    "petz"
+    "cobasi"
+    "petshop"
+    "pet shop"
+    "animal"
+    "veterinary"],
+   :color "#FFB6B9",
+   :icon "pet"},
+  "Subscriptions"
+  {:keywords
+   ["spotify"
+    "netflix"
+    "amazon prime"
+    "disney"
+    "hbo"
+    "youtube premium"
+    "apple music"
+    "deezer"
+    "globoplay"
+    "paramount"
+    "crunchyroll"
+    "prime video"
+    "star+"
+    "max"
+    "telegram premium"
+    "chatgpt"
+    "github"
+    "subscription"],
+   :color "#95E1D3",
+   :icon "subscription"},
+  "Utilities"
+  {:keywords
+   ["internet"
+    "telefone"
+    "celular"
+    "luz"
+    "energia"
+    "phone"
+    "água"
+    "agua"
+    "condominio"
+    "condomínio"
+    "aluguel"
+    "water"
+    "vivo"
+    "claro"
+    "tim"
+    "oi"
+    "copel"
+    "cemig"
+    "eletropaulo"
+    "utilities"],
+   :color "#FFD93D",
+   :icon "utilities"},
+  "Home"
+  {:keywords
+   ["mobilia"
+    "móvel"
+    "decoração"
+    "decoracao"
+    "leroy"
+    "furniture"
+    "tok stok"
+    "etna"
+    "home center"
+    "construção"
+    "construcao"
+    "home"],
+   :color "#FFDAB9",
+   :icon "home"},
+  "Clothing"
+  {:keywords
+   ["roupa"
+    "calça"
+    "camisa"
+    "sapato"
+    "tênis"
+    "tenis"
+    "clothes"
+    "zara"
+    "renner"
+    "c&a"
+    "riachuelo"
+    "nike"
+    "adidas"
+    "fashion"
+    "moda"
+    "clothing"],
+   :color "#E4C1F9",
+   :icon "clothing"},
+  "Online Shopping"
+  {:keywords
+   ["amazon"
+    "mercado livre"
+    "americanas"
+    "magazine luiza"
+    "shopee"
+    "aliexpress"
+    "shein"
+    "kabum"
+    "pichau"
+    "submarino"
+    "casas bahia"
+    "ponto frio"
+    "shopping"],
+   :color "#A8D8EA",
+   :icon "shopping"}},
+ :report
+ {:formats [:txt :json :edn :csv :html],
+  :default-format :txt,
+  :include-charts false,
+  :locale "pt-BR"},
+ :analysis
+ {:detect-duplicates true,
+  :duplicate-threshold-hours 24,
+  :min-transaction-amount 0.01,
+  :outlier-threshold 3.0,
+  :trend-period-months 3},
+ :logging
+ {:level :info,
+  :output :console,
+  :file "logs/nubank-analyzer.log",
+  :format :pretty}}

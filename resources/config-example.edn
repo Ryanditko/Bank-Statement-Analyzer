@@ -1,0 +1,42 @@
+;; Custom configuration file for Nubank Analyzer
+;; Copy and edit this file according to your needs
+
+{:app {:name "Nubank Analyzer - Custom"
+       :version "1.0.0"
+       :author "Your Name"}
+
+ :csv {:delimiter \,
+       :quote \"
+       :encoding "UTF-8"
+       :skip-empty-lines true}
+
+ :parser {:date-formats ["dd/MM/yyyy" "yyyy-MM-dd" "dd-MM-yyyy"]
+          :currency-locale "pt-BR"
+          :amount-precision 2}
+
+ ;; Add your own categories and keywords here
+ :categories {"Food" {:keywords ["restaurant" "ifood" "uber eats" "rappi"]
+                      :color "#FF6B6B"}
+
+              "Transport" {:keywords ["uber" "99" "taxi" "gas" "fuel"]
+                           :color "#4ECDC4"}
+
+              ;; Add more categories as needed
+              "My Category" {:keywords ["keyword1" "keyword2"]
+                             :color "#CUSTOM"}}
+
+ :report {:formats [:txt :json :edn :csv :html]
+          :default-format :txt
+          :include-charts false
+          :locale "pt-BR"}
+
+ :analysis {:detect-duplicates true
+            :duplicate-threshold-hours 24
+            :min-transaction-amount 0.01
+            :outlier-threshold 3.0
+            :trend-period-months 3}
+
+ :logging {:level :info  ; :debug :info :warn :error
+           :output :console
+           :file "logs/nubank-analyzer.log"
+           :format :pretty}}

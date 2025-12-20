@@ -1,0 +1,21 @@
+{:paths ["src" "resources"]
+ 
+ :deps {org.clojure/clojure {:mvn/version "1.11.1"}
+        org.clojure/data.csv {:mvn/version "1.0.1"}
+        org.clojure/data.json {:mvn/version "2.4.0"}
+        org.clojure/tools.cli {:mvn/version "1.0.219"}}
+ 
+ :aliases 
+ {:dev {:extra-paths ["test"]
+        :extra-deps {lambdaisland/kaocha {:mvn/version "1.87.1366"}}}
+  
+  :test {:extra-paths ["test"]
+         :extra-deps {org.clojure/test.check {:mvn/version "1.1.1"}}}
+  
+  :run {:main-opts ["-m" "nubank-analyzer.core"]}
+  
+  :uberjar {:replace-deps {com.github.seancorfield/depstar {:mvn/version "2.1.303"}}
+            :exec-fn hf.depstar/uberjar
+            :exec-args {:aot true
+                       :jar "nubank-analyzer.jar"
+                       :main-class nubank-analyzer.core}}}}
