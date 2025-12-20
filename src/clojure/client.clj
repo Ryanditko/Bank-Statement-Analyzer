@@ -1,34 +1,34 @@
 (ns clojure.client
-  "Script para análise de transações do Nubank
-   - Lê CSV de transações exportado do app Nubank
-   - Categoriza automaticamente os gastos
-   - Gera resumo mensal e por categoria
-   - Detecta possíveis duplicatas
-   - Calcula estatísticas de gastos"
+  "Script for analyzing Nubank transactions
+   - Reads CSV transactions exported from Nubank app
+   - Automatically categorizes expenses
+   - Generates monthly and category summaries
+   - Detects possible duplicates
+   - Calculates spending statistics"
   (:require [clojure.java.io :as io]
             [clojure.data.csv :as csv]
             [clojure.string :as str]))
 
 ;; ============================================================================
-;; Funções de Parsing
+;; Parsing Functions
 ;; ============================================================================
 
 (defn parse-amount
-  "Converte string de valor monetário para número.
-   Aceita formatos: 'R$ -1.234,56', '-1234.56', '1,234.56'"
+  "Converts monetary value string to number.
+   Accepts formats: 'R$ -1.234,56', '-1234.56', '1,234.56'"
   [s]
   (when (and s (not (str/blank? s)))
     (try
       (let [clean (-> s
                       (str/replace #"R\$\s*" "")           ; Remove R$
-                      (str/replace #"\s+" "")              ; Remove espaços
-                      (str/replace #"\.(?=\d{3})" "")      ; Remove separador de milhar (ponto)
-                      (str/replace #"," "."))]             ; Vírgula decimal vira ponto
+                      (str/replace #"\s+" "")              ; Remove spaces
+                      (str/replace #"\.(?=\d{3})" "")      ; Remove thousands separator (dot)
+                      (str/replace #"," "."))]             ; Decimal comma becomes dot
         (Double/parseDouble clean))
       (catch Exception _ nil))))
 
 (defn parse-date
-  "Converte string de data para formato yyyy-MM-dd"
+  "Converts date string to yyyy-MM-dd format"
   [date-str]
   (when-not (str/blank? date-str)
     (let [s (str/trim date-str)]
@@ -38,7 +38,7 @@
         (let [[d m y] (str/split s #"/")] 
           (str y "-" m "-" d))
         
-        ;; yyyy-MM-dd (já no formato)
+        ;; yyyy-MM-dd (already in format)
         (re-matches #"\d{4}-\d{2}-\d{2}" s)
         s
         
@@ -46,8 +46,8 @@
         date-str))))
 
 (defn parse-row
-  "Mapeia uma linha CSV para mapa de transação.
-   Espera colunas: date/data, description/descrição, amount/valor"
+  "Maps a CSV line to a transaction map.
+   Expects columns: date/data, description/descrição, amount/valor"
   [headers row]
   (let [m (zipmap (map #(-> % str/trim str/lower-case) headers)
                   (map str/trim row))
@@ -60,69 +60,69 @@
      :amount (parse-amount amount-str)}))
 
 ;; ============================================================================
-;; Categorização Automática
+;; Automatic Categorization
 ;; ============================================================================
 
 (def categorias-nubank
-  "Mapa de categorias com palavras-chave para classificação automática"
-  {"Alimentação" ["restaurante" "lanchonete" "padaria" "ifood" "uber eats" 
-                  "rappi" "mcdonalds" "burger" "pizza" "açai" "acai"
-                  "cafe" "café" "bar" "pub"]
+  "Map of categories with keywords for automatic classification"
+  {"Food" ["restaurante" "lanchonete" "padaria" "ifood" "uber eats" 
+           "rappi" "mcdonalds" "burger" "pizza" "açai" "acai"
+           "cafe" "café" "bar" "pub"]
    
-   "Transporte" ["uber" "99" "taxi" "metrô" "metro" "onibus" "ônibus"
-                 "bus" "passagem" "combustivel" "combustível" "gasolina"
-                 "posto" "ipiranga" "shell" "estacionamento"]
+   "Transportation" ["uber" "99" "taxi" "metrô" "metro" "onibus" "ônibus"
+                     "bus" "passagem" "combustivel" "combustível" "gasolina"
+                     "posto" "ipiranga" "shell" "estacionamento"]
    
-   "Assinaturas" ["spotify" "netflix" "amazon prime" "disney" "hbo"
-                  "youtube" "apple music" "deezer" "globoplay"
-                  "paramount" "crunchyroll" "prime video"]
+   "Subscriptions" ["spotify" "netflix" "amazon prime" "disney" "hbo"
+                    "youtube" "apple music" "deezer" "globoplay"
+                    "paramount" "crunchyroll" "prime video"]
    
-   "Supermercado" ["carrefour" "pão de açucar" "pao de acucar" "extra"
-                   "walmart" "mercado" "supermercado" "atacadão" "atacadao"
-                   "zaffari" "dia%" "sam's club"]
+   "Grocery" ["carrefour" "pão de açucar" "pao de acucar" "extra"
+              "walmart" "mercado" "supermercado" "atacadão" "atacadao"
+              "zaffari" "dia%" "sam's club"]
    
-   "Saúde" ["drogaria" "farmacia" "farmácia" "clinica" "clínica"
-            "hospital" "laboratorio" "laboratório" "consulta"
-            "drogasil" "pacheco" "ultrafarma"]
+   "Health" ["drogaria" "farmacia" "farmácia" "clinica" "clínica"
+             "hospital" "laboratorio" "laboratório" "consulta"
+             "drogasil" "pacheco" "ultrafarma"]
    
-   "Educação" ["curso" "livro" "livraria" "udemy" "coursera"
-               "faculdade" "escola" "material escolar"]
+   "Education" ["curso" "livro" "livraria" "udemy" "coursera"
+                "faculdade" "escola" "material escolar"]
    
-   "Lazer" ["cinema" "teatro" "show" "ingresso" "parque"
-            "viagem" "hotel" "airbnb" "booking"]
+   "Entertainment" ["cinema" "teatro" "show" "ingresso" "parque"
+                    "viagem" "hotel" "airbnb" "booking"]
    
-   "Compras Online" ["amazon" "mercado livre" "americanas" "magazine luiza"
-                     "shopee" "aliexpress" "shein"]
+   "Online Shopping" ["amazon" "mercado livre" "americanas" "magazine luiza"
+                      "shopee" "aliexpress" "shein"]
    
-   "Serviços" ["internet" "telefone" "celular" "luz" "energia"
+   "Services" ["internet" "telefone" "celular" "luz" "energia"
                "água" "agua" "condominio" "condomínio" "aluguel"]
    
-   "Transferências" ["pix" "transferencia" "transferência" "ted" "doc"]})
+   "Transfers" ["pix" "transferencia" "transferência" "ted" "doc"]})
 
 (defn categorizar
-  "Determina categoria baseado em palavras-chave na descrição"
+  "Determines category based on keywords in description"
   [descricao]
   (let [desc-lower (-> (or descricao "") str/lower-case)]
     (or (some (fn [[categoria keywords]]
                 (when (some #(str/includes? desc-lower %) keywords)
                   categoria))
               categorias-nubank)
-        "Outros")))
+        "Others")))
 
 ;; ============================================================================
-;; Análise de Transações
+;; Transaction Analysis
 ;; ============================================================================
 
 (defn month-key
-  "Extrai mês/ano da data (formato: MM/yyyy)"
+  "Extracts month/year from date (format: MM/yyyy)"
   [date-str]
   (when date-str
     (if-let [[_ y m] (re-find #"(\d{4})-(\d{2})" date-str)]
       (str m "/" y)
-      "Desconhecido")))
+      "Unknown")))
 
 (defn read-transactions
-  "Lê arquivo CSV e retorna vetor de transações"
+  "Reads CSV file and returns vector of transactions"
   [file-path]
   (with-open [reader (io/reader file-path)]
     (let [all-lines (csv/read-csv reader)
@@ -130,20 +130,20 @@
           rows (rest all-lines)]
       (->> rows
            (map #(parse-row headers %))
-           (filter :amount)  ; Remove linhas inválidas
+           (filter :amount)  ; Remove invalid lines
            (map #(assoc % 
                    :month (month-key (:date %))
                    :categoria (categorizar (:description %))))
            vec))))
 
 (defn analyze-transactions
-  "Analisa transações e gera estatísticas completas"
+  "Analyzes transactions and generates complete statistics"
   [transactions]
-  (let [;; Totais gerais
+  (let [;; General totals
         total-gasto (reduce + 0 (map :amount transactions))
         total-count (count transactions)
         
-        ;; Por mês
+        ;; By month
         by-month (group-by :month transactions)
         month-summary (into (sorted-map)
                            (for [[mes txs] by-month]
@@ -151,7 +151,7 @@
                                    :count (count txs)
                                    :media (/ (reduce + 0 (map :amount txs)) (count txs))}]))
         
-        ;; Por categoria
+        ;; By category
         by-category (group-by :categoria transactions)
         category-summary (into (sorted-map)
                               (for [[cat txs] by-category]
@@ -160,7 +160,7 @@
                                       :percent (* 100 (/ (reduce + 0 (map :amount txs)) 
                                                         total-gasto))}]))
         
-        ;; Detectar duplicatas (mesma data + valor similar)
+        ;; Detect duplicates (same date + similar amount)
         dup-key (fn [t] 
                   [(:date t) 
                    (Math/round (* 100 (:amount t)))])
@@ -170,7 +170,7 @@
                        (map val) 
                        vec)
         
-        ;; Top 10 maiores gastos
+        ;; Top 10 highest expenses
         top-10 (->> transactions
                     (sort-by :amount >)
                     (take 10))]
@@ -184,11 +184,11 @@
      :top-10-gastos top-10}))
 
 ;; ============================================================================
-;; Relatórios
+;; Reports
 ;; ============================================================================
 
 (defn format-currency
-  "Formata número como moeda brasileira"
+  "Formats number as Brazilian currency"
   [n]
   (format "R$ %.2f" n))
 
@@ -196,52 +196,52 @@
   (println (str/join (repeat 70 "="))))
 
 (defn print-report
-  "Imprime relatório completo no console"
+  "Prints complete report to console"
   [analysis]
   (println "\n")
   (print-separator)
-  (println "          ANÁLISE DE TRANSAÇÕES NUBANK")
+  (println "          NUBANK TRANSACTION ANALYSIS")
   (print-separator)
   
-  ;; Resumo Geral
-  (println "\n📊 RESUMO GERAL")
-  (println "  Total gasto:" (format-currency (get-in analysis [:resumo-geral :total])))
-  (println "  Quantidade de transações:" (get-in analysis [:resumo-geral :quantidade]))
-  (println "  Média por transação:" (format-currency (get-in analysis [:resumo-geral :media])))
+  ;; General Summary
+  (println "\n📊 GENERAL SUMMARY")
+  (println "  Total spent:" (format-currency (get-in analysis [:resumo-geral :total])))
+  (println "  Number of transactions:" (get-in analysis [:resumo-geral :quantidade]))
+  (println "  Average per transaction:" (format-currency (get-in analysis [:resumo-geral :media])))
   
-  ;; Por Mês
-  (println "\n📅 GASTOS POR MÊS")
+  ;; By Month
+  (println "\n📅 EXPENSES BY MONTH")
   (doseq [[mes dados] (:por-mes analysis)]
-    (println (format "  %s → %s (%d transações, média: %s)"
+    (println (format "  %s → %s (%d transactions, average: %s)"
                     mes
                     (format-currency (:total dados))
                     (:count dados)
                     (format-currency (:media dados)))))
   
-  ;; Por Categoria
-  (println "\n🏷️  GASTOS POR CATEGORIA")
+  ;; By Category
+  (println "\n🏷️  EXPENSES BY CATEGORY")
   (doseq [[cat dados] (reverse (sort-by #(get-in % [1 :total]) (:por-categoria analysis)))]
-    (println (format "  %-20s %s (%d transações, %.1f%%)"
+    (println (format "  %-20s %s (%d transactions, %.1f%%)"
                     cat
                     (format-currency (:total dados))
                     (:count dados)
                     (:percent dados))))
   
-  ;; Top 10 Gastos
-  (println "\n💰 TOP 10 MAIORES GASTOS")
+  ;; Top 10 Expenses
+  (println "\n💰 TOP 10 HIGHEST EXPENSES")
   (doseq [[idx tx] (map-indexed vector (:top-10-gastos analysis))]
     (println (format "  %2d. %s | %s | %s"
                     (inc idx)
                     (:date tx)
                     (format-currency (:amount tx))
-                    (or (:description tx) "Sem descrição"))))
+                    (or (:description tx) "No description"))))
   
-  ;; Duplicatas
-  (println "\n⚠️  POSSÍVEIS DUPLICATAS")
+  ;; Duplicates
+  (println "\n⚠️  POSSIBLE DUPLICATES")
   (if (empty? (:duplicatas analysis))
-    (println "  ✓ Nenhuma duplicata encontrada")
+    (println "  ✓ No duplicates found")
     (doseq [[idx group] (map-indexed vector (:duplicatas analysis))]
-      (println (format "  Grupo %d:" (inc idx)))
+      (println (format "  Group %d:" (inc idx)))
       (doseq [tx group]
         (println (format "    - %s | %s | %s"
                         (:date tx)
@@ -252,68 +252,68 @@
   (print-separator))
 
 (defn save-report
-  "Salva relatório em arquivo de texto"
+  "Saves report to text file"
   [analysis output-file]
   (with-open [w (io/writer output-file)]
     (binding [*out* w]
       (print-report analysis)))
-  (println (str "✓ Relatório salvo em: " output-file)))
+  (println (str "✓ Report saved to: " output-file)))
 
 ;; ============================================================================
-;; Função Principal
+;; Main Function
 ;; ============================================================================
 
 (defn -main
-  "Função principal do script
-   Uso: clojure -M -m clojure.client <arquivo.csv> [saida.txt]"
+  "Main script function
+   Usage: clojure -M -m clojure.client <file.csv> [output.txt]"
   [& args]
   (try
     (cond
       (empty? args)
       (do
-        (println "❌ Erro: Informe o caminho do arquivo CSV")
-        (println "\nUso:")
-        (println "  clojure -M -m clojure.client transacoes.csv")
-        (println "  clojure -M -m clojure.client transacoes.csv relatorio.txt"))
+        (println "❌ Error: Please provide the CSV file path")
+        (println "\nUsage:")
+        (println "  clojure -M -m clojure.client transactions.csv")
+        (println "  clojure -M -m clojure.client transactions.csv report.txt"))
       
       :else
       (let [csv-file (first args)
             output-file (second args)]
-        (println "📂 Lendo arquivo:" csv-file)
+        (println "📂 Reading file:" csv-file)
         (let [transactions (read-transactions csv-file)
               analysis (analyze-transactions transactions)]
-          (println (format "✓ %d transações carregadas" (count transactions)))
+          (println (format "✓ %d transactions loaded" (count transactions)))
           
           (if output-file
             (do
               (save-report analysis output-file)
-              (println "\n✓ Análise concluída!"))
+              (println "\n✓ Analysis completed!"))
             (print-report analysis)))))
     
     (catch java.io.FileNotFoundException e
-      (println "❌ Erro: Arquivo não encontrado -" (.getMessage e)))
+      (println "❌ Error: File not found -" (.getMessage e)))
     (catch Exception e
-      (println "❌ Erro ao processar:" (.getMessage e))
+      (println "❌ Error processing:" (.getMessage e))
       (.printStackTrace e))))
 
 (comment
-  ;; Exemplos de uso no REPL:
+  ;; Usage examples in REPL:
   
-  ;; Ler transações
-  (def txs (read-transactions "transacoes.csv"))
+  ;; Read transactions
+  (def txs (read-transactions "transactions.csv"))
   
-  ;; Analisar
-  (def analise (analyze-transactions txs))
+  ;; Analyze
+  (def analysis (analyze-transactions txs))
   
-  ;; Imprimir relatório
-  (print-report analise)
+  ;; Print report
+  (print-report analysis)
   
-  ;; Salvar em arquivo
-  (save-report analise "relatorio.txt")
+  ;; Save to file
+  (save-report analysis "report.txt")
   
-  ;; Filtrar por categoria
-  (filter #(= (:categoria %) "Alimentação") txs)
+  ;; Filter by category
+  (filter #(= (:categoria %) "Food") txs)
   
-  ;; Transações acima de R$ 100
+  ;; Transactions above R$ 100
   (filter #(> (:amount %) 100) txs)
   )
