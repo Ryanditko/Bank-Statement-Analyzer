@@ -1,102 +1,94 @@
 # Bank Statement Analyzer
 
-> **A powerful Clojure-based tool for comprehensive bank transaction analysis**
+> **A Clojure-based tool for analyzing Nubank bank statements**
 
-Analyze your Nubank statements with automatic categorization, statistical insights, and flexible export formats.
+Automatically categorize transactions, detect duplicates, and generate detailed financial reports from your Nubank CSV exports.
 
 ---
 
 ## Overview
 
-This tool processes CSV bank statements and generates detailed financial reports with:
+This tool processes CSV bank statements and provides:
 
-- **Automatic categorization** across 9+ categories
-- **Statistical analysis** (mean, median, std deviation, outliers)
-- **Temporal trends** (monthly patterns, spending trajectories)
-- **Duplicate detection** (identify repeated transactions)
-- **Recurring transactions** (subscriptions and regular payments)
+- **Automatic categorization** into 10 predefined categories
+- **Statistical analysis** (totals, averages, min/max per category and month)
+- **Duplicate detection** to identify repeated transactions
 - **Multiple export formats** (TXT, JSON, EDN, CSV, HTML)
+- **Flexible filtering** by category, amount, and date
+- **Custom configuration** for personalized categories
 
-## Quick Example
+## Quick Start
 
-```powershell
-# Analyze transactions and generate HTML report
+```bash
+# Basic analysis (console output)
+clj -M:run -i transactions.csv
+
+# Generate HTML report
 clj -M:run -i transactions.csv -o report.html -f html
-
-# Filter high-value transactions
-clj -M:run -i transactions.csv --min-amount 100
 
 # Export all formats at once
 clj -M:run -i transactions.csv -o report -f all
 ```
 
+---
+
 ## Features
 
-### Transaction Analysis
+### Transaction Processing
 
-- **CSV Parsing** - Robust multi-format CSV file processing
-- **Categorization** - 9 predefined categories (Food, Transport, Subscriptions, Shopping, Health, Entertainment, Bills, Education, Others)
-- **Statistics** - Mean, median, min/max, standard deviation per category and month
-- **Outlier Detection** - Identify unusual spending patterns
-- **Duplicates** - Find potentially duplicate transactions
-- **Recurring** - Detect subscriptions and regular payments
-- **Merchants** - Analyze spending by establishment
-- **Trends** - Monthly spending trajectories with direction indicators
+- **CSV Parsing** - Reads Nubank CSV exports with date, description, and amount
+- **Auto-categorization** - 10 categories: Food, Transportation, Subscriptions, Grocery, Health, Education, Entertainment, Online Shopping, Services, Transfers, Others
+- **Statistics** - Calculates totals, counts, and averages per category and month
+- **Duplicate Detection** - Identifies transactions with same date and similar amounts
+- **Top Expenses** - Shows your highest spending transactions
 
 ### Export Formats
 
 | Format | Description | Use Case |
 |--------|-------------|----------|
-| **TXT** | Formatted plain text | Quick reading and printing |
-| **JSON** | Structured data | API integration and automation |
-| **EDN** | Clojure native format | Advanced processing in Clojure |
-| **CSV** | Processed transactions | Spreadsheet analysis |
-| **HTML** | Interactive report | Visual exploration and sharing |
+| **TXT** | Formatted console text | Quick viewing |
+| **JSON** | Structured data | API integration |
+| **EDN** | Clojure data format | Advanced processing |
+| **CSV** | Spreadsheet format | Excel/Sheets analysis |
+| **HTML** | Web report | Visual exploration |
 
-### Filtering & Customization
+### Filtering Options
 
-- Filter by category, amount range, date range
-- Custom configuration files for personalized categories
-- Flexible output paths and naming
-- Verbose and debug logging modes
+- Filter by specific category
+- Set minimum/maximum amount thresholds
+- Filter by month (MM/YYYY format)
+- Validation-only mode (no report generation)
 
 ---
 
 ## Prerequisites
 
 - **Clojure 1.11.1+**
-- **Java 8+** (usually pre-installed)
-- **Windows PowerShell** (for helper scripts)
-
----
+- **Java 8+**
 
 ---
 
 ## Installation
 
-### Windows
+### Clojure Installation
 
-Run the automated installer:
-
+**Windows:**
 ```powershell
-.\install-clojure.ps1
+# Download and run the official installer from:
+# https://github.com/clojure/tools.deps.alpha/wiki/clj-on-Windows
 ```
 
-**Important:** Restart your PowerShell terminal after installation.
+**macOS/Linux:**
+```bash
+# Using Homebrew
+brew install clojure/tools/clojure
+```
 
-For manual installation or troubleshooting, see [INSTALACAO-CLOJURE.md](INSTALACAO-CLOJURE.md).
+### Verify Installation
 
-### Verification
-
-```powershell
-# Check Clojure installation
+```bash
 clj -Sdescribe
-
-# Run test suite
-clj -M:dev -m kaocha.runner
 ```
-
-Expected output: `25 tests, 101 assertions, 0 failures`
 
 ---
 
@@ -104,119 +96,125 @@ Expected output: `25 tests, 101 assertions, 0 failures`
 
 ### Basic Commands
 
-```powershell
-# Simple analysis (console output)
-clj -M:run -i transactions.csv
+```bash
+# Simple analysis
+clj -M:run -i example_transactions.csv
 
-# Generate specific format
+# Specify output format
+clj -M:run -i transactions.csv -o report.txt -f txt
+clj -M:run -i transactions.csv -o report.json -f json
 clj -M:run -i transactions.csv -o report.html -f html
 
-# Export all formats
+# Generate all formats
 clj -M:run -i transactions.csv -o report -f all
 ```
 
-### Filtering
+### Filtering Examples
 
-```powershell
-# By category
+```bash
+# Filter by category
 clj -M:run -i transactions.csv --category Food
 
-# By amount
-clj -M:run -i transactions.csv --min-amount 100 --max-amount 500
+# Filter by amount range
+clj -M:run -i transactions.csv --min-amount 50 --max-amount 200
 
-# By date
+# Filter by month
 clj -M:run -i transactions.csv --month "10/2025"
+
+# Combine filters
+clj -M:run -i transactions.csv --category Transportation --min-amount 100
 ```
 
 ### Configuration
 
-```powershell
-# Export default config
+```bash
+# Export default configuration template
 clj -M:run --export-config my-config.edn
 
-# Use custom config
+# Use custom configuration
 clj -M:run -i transactions.csv -c my-config.edn
 ```
 
-### Validation Only
+### Validation
 
-```powershell
-# Check CSV without analyzing
+```bash
+# Validate CSV without generating report
 clj -M:run -i transactions.csv --validate-only
 ```
 
-### Helper Scripts
+### Additional Options
 
-```powershell
-# Run tests
-.\run-tests.ps1
+```bash
+# Verbose logging
+clj -M:run -i transactions.csv -v
 
-# Analyze with script
-.\run-analyzer.ps1 -InputFile "transactions.csv"
-```
+# Debug mode
+clj -M:run -i transactions.csv --debug
 
-### All Options
+# Skip duplicate detection
+clj -M:run -i transactions.csv --no-duplicates
 
-```powershell
+# Show help
 clj -M:run --help
 ```
 
-For more examples, see [COMANDOS-RAPIDOS.md](COMANDOS-RAPIDOS.md).
-
 ---
 
-## Configuration
+## CSV Format
 
-### Custom Categories
+The tool expects a CSV file with the following columns:
 
-Edit `my-config.edn`:
-
-```edn
-{:categories {"Custom Category"
-              {:keywords ["keyword1" "keyword2"]
-               :color "#FF0000"}}}
+```csv
+date,description,amount
+15/10/2025,IFOOD *IFOOD,R$ -45.50
+14/10/2025,POSTO IPIRANGA,R$ -250.00
+13/10/2025,Netflix Servicos,R$ -44.90
 ```
 
-Then apply it:
-
-```powershell
-clj -M:run -i transactions.csv -c my-config.edn
-```
+**Supported formats:**
+- **Date**: `dd/MM/yyyy` or `yyyy-MM-dd`
+- **Amount**: `R$ -1.234,56` or `-1234.56`
+- **Headers**: Flexible (date/data, description/descrição, amount/valor)
 
 ---
 
 ## Getting Data from Nubank
 
-1. Open the Nubank app
-2. Navigate to **Menu** → **Credit Card**
+1. Open the **Nubank app**
+2. Go to **Menu** → **Credit Card**
 3. Select the desired **invoice**
 4. Tap **⋮** (menu) → **Export statement** → **CSV**
-5. Transfer the CSV file to your computer
-6. Run the analyzer on the exported file
+5. Transfer the CSV to your computer
+6. Run the analyzer
+
+---
+
+## Configuration Files
+
+### Custom Categories
+
+Create a custom config file (e.g., `my-config.edn`):
+
+```edn
+{:categories
+ {"My Custom Category"
+  {:keywords ["keyword1" "keyword2" "brand name"]
+   :color "#FF5733"}
+  
+  "Pets"
+  {:keywords ["petshop" "veterinario" "vet" "racao"]
+   :color "#4CAF50"}}}
+```
+
+Then use it:
+
+```bash
+clj -M:run -i transactions.csv -c my-config.edn
+```
 
 ---
 
 ## Development
-
-### REPL Usage
-
-```clojure
-; Start REPL
-; $ clj
-
-; Load modules
-(require '[nubank-analyzer.core :as core])
-(require '[nubank-analyzer.reports :as reports])
-
-; Analyze file
-(def analysis (core/analyze-file "transactions.csv"))
-
-; View statistics
-(get-in analysis [:general :stats])
-
-; Generate report
-(reports/export-report analysis :html "report.html")
-```
 
 ### Project Structure
 
@@ -224,95 +222,107 @@ clj -M:run -i transactions.csv -c my-config.edn
 Bank-Statement-Analyzer/
 ├── src/nubank_analyzer/
 │   ├── core.clj          # Main orchestration
-│   ├── cli.clj           # CLI argument handling
-│   ├── parser.clj        # CSV parsing
+│   ├── cli.clj           # CLI argument parsing
+│   ├── parser.clj        # CSV parsing logic
 │   ├── analyzer.clj      # Transaction analysis
-│   ├── reports.clj       # Report generation
+│   ├── reports.clj       # Report generation (TXT/JSON/EDN/CSV/HTML)
 │   ├── validation.clj    # Data validation
 │   ├── config.clj        # Configuration management
 │   └── logger.clj        # Logging system
+├── src/clojure/
+│   └── client.clj        # Standalone script version
 ├── test/nubank_analyzer/ # Test suite
-├── resources/            # Config examples
-├── docs/                 # Documentation
-└── deps.edn              # Dependencies
+├── resources/
+│   └── config-example.edn # Configuration example
+├── docs/
+│   └── dev.md            # Development guide
+├── deps.edn              # Project dependencies
+└── example_transactions.csv # Sample data
 ```
 
-### Testing
+### Running Tests
 
-```powershell
+```bash
 # Run all tests
 clj -M:dev -m kaocha.runner
 
 # Watch mode (auto-rerun on changes)
 clj -M:dev -m kaocha.runner --watch
-
-# Using helper script
-.\run-tests.ps1
 ```
 
-**Expected:** `25 tests, 101 assertions, 0 failures`
+### REPL Development
 
-### Contributing
+```clojure
+; Start REPL
+; $ clj
 
-Contributions welcome! Please:
+; Load namespaces
+(require '[nubank-analyzer.core :as core])
+(require '[nubank-analyzer.parser :as parser])
+(require '[nubank-analyzer.analyzer :as analyzer])
+(require '[nubank-analyzer.reports :as reports])
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/my-feature`)
-3. Write tests for new functionality
-4. Ensure all tests pass
-5. Follow existing code style
-6. Commit with clear messages
-7. Submit a pull request
+; Parse transactions
+(def txs (parser/parse-csv-file "example_transactions.csv"))
 
-See [docs/dev.md](docs/dev.md) for development guidelines.
+; Analyze
+(def analysis (analyzer/analyze-transactions txs))
+
+; View results
+(:general analysis)
+(:by-category analysis)
+(:by-month analysis)
+
+; Generate report
+(reports/export-report analysis :html "output.html")
+```
 
 ---
 
-## Documentation
+## Categories
 
-- **[INSTALACAO-CLOJURE.md](INSTALACAO-CLOJURE.md)** - Complete installation guide
-- **[COMANDOS-RAPIDOS.md](COMANDOS-RAPIDOS.md)** - Quick command reference
-- **[docs/dev.md](docs/dev.md)** - Development and architecture guide
-- **[README-NEXT-STEPS.md](README-NEXT-STEPS.md)** - Getting started guide
+The tool automatically categorizes transactions into:
+
+| Category | Examples |
+|----------|----------|
+| **Food** | Restaurants, iFood, cafes, fast food |
+| **Transportation** | Uber, gas stations, parking, metro |
+| **Subscriptions** | Netflix, Spotify, streaming services |
+| **Grocery** | Supermarkets (Carrefour, Extra, etc.) |
+| **Health** | Pharmacies, clinics, hospitals |
+| **Education** | Courses, books, bookstores |
+| **Entertainment** | Cinema, hotels, travel, shows |
+| **Online Shopping** | Amazon, Mercado Livre, Shopee |
+| **Services** | Internet, phone, utilities, rent |
+| **Transfers** | PIX, bank transfers (TED/DOC) |
+| **Others** | Uncategorized transactions |
 
 ---
 
 ## Troubleshooting
 
-### Common Issues
-
-**Clojure not found:**
-```powershell
-# Restart PowerShell after installation
+### Clojure not found
+```bash
 # Verify installation
 clj -Sdescribe
+
+# May need to restart terminal after installation
 ```
 
-**CSV parsing errors:**
-```powershell
-# Validate CSV structure
+### CSV parsing errors
+```bash
+# Validate CSV first
 clj -M:run -i file.csv --validate-only
+
+# Check file encoding (should be UTF-8)
+# Check date/amount formats match expected patterns
 ```
 
-**Permission errors:**
+### Permission errors (Windows)
 ```powershell
 # Run PowerShell as Administrator
 Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
-
-For more help, see [COMANDOS-RAPIDOS.md](COMANDOS-RAPIDOS.md).
-
----
-
-## Roadmap
-
-- [ ] Interactive HTML dashboard with charts
-- [ ] Excel (.xlsx) export format
-- [ ] REST API for web integration
-- [ ] Machine learning-based categorization
-- [ ] Budget forecasting and predictions
-- [ ] Multi-bank support (beyond Nubank)
-- [ ] Mobile app companion
 
 ---
 
@@ -324,7 +334,7 @@ Free for personal and educational use.
 
 ## Acknowledgments
 
-Built with [Clojure](https://clojure.org/) • Testing with [Kaocha](https://github.com/lambdaisland/kaocha) • Inspired by Nubank's transparency
+Built with [Clojure](https://clojure.org/) • Testing with [Kaocha](https://github.com/lambdaisland/kaocha)
 
 ---
 
