@@ -1,188 +1,174 @@
-# Guia de Desenvolvimento
+# Development Guide
 
-## Arquitetura do Sistema
+This document provides guidelines for contributing to the Bank Statement Analyzer project and understanding its architecture.
 
-### Fluxo de Execução
+## Project Architecture
+
+### Execution Flow
 
 ```
 CLI → Config → Parser → Validation → Analyzer → Reports
 ```
 
-### Módulos
+### Core Modules
 
-1. **core.clj** - Orquestração principal
-2. **cli.clj** - Gerencia argumentos e comandos
-3. **config.clj** - Configuração centralizada
-4. **logger.clj** - Sistema de logging
-5. **parser.clj** - Leitura e parsing de CSV
-6. **validation.clj** - Validação com Clojure Spec
-7. **analyzer.clj** - Análise e estatísticas
-8. **reports.clj** - Geração de relatórios
+**`src/nubank_analyzer/`**
 
-## Adicionando Nova Funcionalidade
+- `core.clj` - Main orchestration and entry point
+- `cli.clj` - Command-line argument handling
+- `config.clj` - Centralized configuration management
+- `logger.clj` - Logging system
+- `parser.clj` - CSV file parsing and reading
+- `validation.clj` - Data validation using Clojure Spec
+- `analyzer.clj` - Transaction analysis and statistics
+- `reports.clj` - Report generation and export
 
-### 1. Adicionar Nova Categoria
+## Adding Features
 
-Edite `src/nubank_analyzer/config.clj`:
+### Adding a New Category
+
+Edit `src/nubank_analyzer/config.clj`:
 
 ```clojure
-:categories {"Nova Categoria" 
-             {:keywords ["palavra1" "palavra2"]
-              :color "#HEXCOLOR"
-              :icon "🎯"}}
+:categories {"My Category"
+             {:keywords ["keyword1" "keyword2"]
+              :color "#FF0000"}}
 ```
 
-### 2. Adicionar Novo Formato de Relatório
+### Adding a New Report Format
 
-Em `src/nubank_analyzer/reports.clj`:
+Edit `src/nubank_analyzer/reports.clj`:
+
+1. Create a new function:
 
 ```clojure
 (defn generate-xml-report [analysis output-stream]
-  ; Implementação aqui
+  ; Implementation here
   )
-
-;; Adicionar ao case em export-report
-(case format
-  ; ...
-  :xml (generate-xml-report analysis writer))
 ```
 
-### 3. Adicionar Nova Análise
-
-Em `src/nubank_analyzer/analyzer.clj`:
+2. Register it in the `export-report` function:
 
 ```clojure
-(defn minha-analise [transactions]
-  ; Implementação
+(case format
+  :xml (generate-xml-report analysis writer)
+  ; ...
   )
-
-;; Adicionar a perform-complete-analysis
-(let [minha-analise (minha-analise enriched-txs)]
-  {:general general-stats
-   ; ...
-   :minha-analise minha-analise})
 ```
 
-## Testes
+### Adding New Analysis
 
-### Executar Testes
+Edit `src/nubank_analyzer/analyzer.clj`:
 
-```powershell
+```clojure
+(defn my-analysis [transactions]
+  ; Your analysis logic
+  )
+```
+
+Then integrate it into the main `analyze` function:
+
+```clojure
+(assoc analysis
+  :my-metric (my-analysis transactions))
+```
+
+## Commit Message Convention
+
+Follow the Conventional Commits format:
+
+- `feat:` - New feature
+- `fix:` - Bug fix
+- `docs:` - Documentation
+- `test:` - Tests
+- `refactor:` - Code refactoring
+- `perf:` - Performance improvement
+
+Example:
+```
+feat: add PDF export format
+
+Implement PDF report generation using iText library.
+```
+
+## Testing
+
+### Running Tests
+
+```bash
 clojure -X:test
 ```
 
-### Criar Novo Teste
+### Test Structure
+
+Tests are located in `test/nubank_analyzer/` with the same module names as the source code:
+
+- `analyzer_test.clj`
+- `parser_test.clj`
+- `validation_test.clj`
+
+### Writing Tests
+
+Use `clojure.test` and follow this pattern:
 
 ```clojure
-(ns nubank-analyzer.meu-modulo-test
-  (:require [clojure.test :refer [deftest is testing]]
-            [nubank-analyzer.meu-modulo :as mm]))
-
-(deftest test-minha-funcao
-  (testing "Descrição do teste"
-    (is (= resultado-esperado (mm/minha-funcao input)))))
+(deftest my-test
+  (is (= expected (function-under-test input))))
 ```
 
-## Debugging
+## Building
 
-### Modo Verbose
+### Building JAR
 
-```powershell
-clojure -M -m nubank-analyzer.core -i transacoes.csv --verbose
-```
-
-### Modo Debug
-
-```powershell
-clojure -M -m nubank-analyzer.core -i transacoes.csv --debug
-```
-
-### REPL
-
-```clojure
-; Iniciar REPL
-clojure
-
-; Carregar namespace
-(require '[nubank-analyzer.core :as core])
-(require '[nubank-analyzer.logger :as log])
-
-; Configurar log
-(log/configure! {:level :debug :console true})
-
-; Processar
-(def result (core/analyze-file "exemplo-transacoes.csv"))
-```
-
-## Performance
-
-### Timing
-
-O sistema inclui timing automático via `log/with-timing`:
-
-```clojure
-(log/with-timing "Minha operação"
-  ; código aqui
-  )
-```
-
-### Profiling
-
-Para operações pesadas, use `time`:
-
-```clojure
-(time (minha-funcao-pesada))
-```
-
-## Boas Práticas
-
-1. **Sempre validar inputs** com Clojure Spec
-2. **Logar operações importantes** com níveis apropriados
-3. **Escrever testes** para novas funcionalidades
-4. **Documentar funções** com docstrings
-5. **Usar threading macros** (->, ->>) para clareza
-6. **Evitar side effects** em funções de análise
-7. **Tratar exceções** adequadamente
-
-## Estrutura de Commit
-
-```
-tipo(escopo): descrição curta
-
-Descrição detalhada se necessário
-
-- Item 1
-- Item 2
-```
-
-Tipos:
-- `feat`: Nova funcionalidade
-- `fix`: Correção de bug
-- `docs`: Documentação
-- `test`: Testes
-- `refactor`: Refatoração
-- `perf`: Performance
-
-## Publicação
-
-### Build
-
-```powershell
+```bash
 clojure -X:uberjar
 ```
 
-### Executar JAR
+### Running JAR
 
-```powershell
-java -jar nubank-analyzer.jar -i transacoes.csv
+```bash
+java -jar nubank-analyzer.jar -i transactions.csv
+```
+
+## Development Workflow
+
+1. Create a feature branch from `main`
+2. Implement your changes
+3. Write tests for new functionality
+4. Run the test suite to verify
+5. Commit with meaningful messages
+6. Create a pull request with a clear description
+
+## Code Style
+
+- Use meaningful variable names
+- Keep functions small and focused
+- Document public functions with docstrings
+- Follow Clojure conventions and idioms
+- Use `let` bindings for intermediate results
+
+## Common Tasks
+
+### Debug a Specific Module
+
+```clojure
+(require '[nubank-analyzer.parser :as parser])
+(parser/parse-csv "transactions.csv")
+```
+
+### Check Data Validation
+
+```clojure
+(require '[clojure.spec.alpha :as s])
+(s/conform :transaction/spec your-transaction)
 ```
 
 ## Roadmap
 
-- [ ] Gráficos interativos no HTML
-- [ ] Export para Excel
-- [ ] API REST
-- [ ] Dashboard web
-- [ ] Machine Learning para categorização
-- [ ] Previsão de gastos
-- [ ] Integração com outras APIs bancárias
+- [ ] Interactive HTML dashboard
+- [ ] Excel export
+- [ ] REST API
+- [ ] Web dashboard
+- [ ] Machine learning categorization
+- [ ] Budget forecasting
+- [ ] Integration with other banking APIs
