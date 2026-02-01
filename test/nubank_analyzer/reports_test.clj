@@ -1,7 +1,7 @@
 (ns nubank-analyzer.reports-test
   (:require [clojure.test :refer [deftest is testing]]
             [nubank-analyzer.reports :as reports]
-            [clojure.java.io :as io]))
+            [clojure.string :as str]))
 
 (deftest test-format-currency
   (testing "Currency formatting"
@@ -33,5 +33,5 @@
   (testing "Section header formatting"
     (let [header (reports/print-section-header "TEST")]
       (is (string? header))
-      (is (clojure.string/includes? header "TEST"))
-      (is (clojure.string/includes? header "=")))))
+      (is (str/includes? header "TEST"))
+      (is (str/includes? header "=")))))
