@@ -4,9 +4,6 @@
   (:import [java.time LocalDateTime]
            [java.time.format DateTimeFormatter]))
 
-;; ============================================================================
-;; Logger State
-;; ============================================================================
 
 (def ^:private log-levels
   {:debug 0
@@ -18,9 +15,6 @@
 (def ^:private log-file (atom nil))
 (def ^:private log-to-console (atom true))
 
-;; ============================================================================
-;; Formatting
-;; ============================================================================
 
 (defn- timestamp []
   (.format (LocalDateTime/now)
@@ -48,9 +42,6 @@
           (level-prefix level)
           message))
 
-;; ============================================================================
-;; Configuration
-;; ============================================================================
 
 (defn configure!
   "Configure the logging system.
@@ -67,9 +58,6 @@
   (when (contains? opts :console)
     (reset! log-to-console (:console opts))))
 
-;; ============================================================================
-;; Log Functions
-;; ============================================================================
 
 (defn- should-log? [level]
   (>= (get log-levels level 0)
@@ -114,9 +102,6 @@
     (doseq [line (.getStackTrace throwable)]
       (error "  at %s" line))))
 
-;; ============================================================================
-;; Performance Macros
-;; ============================================================================
 
 (defmacro with-timing
   "Execute code and log execution time"
@@ -136,9 +121,6 @@
        (exception "Error during execution" e#)
        (throw e#))))
 
-;; ============================================================================
-;; Utilities
-;; ============================================================================
 
 (defn clear-log-file!
   "Clear the log file contents"

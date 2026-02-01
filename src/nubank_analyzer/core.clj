@@ -8,11 +8,9 @@
             [nubank-analyzer.validation :as validation]
             [nubank-analyzer.reports :as reports]
             [nubank-analyzer.cli :as cli]
+            [clojure.java.io :as io]
             [clojure.string :as str]))
 
-;; ============================================================================
-;; Main Pipeline
-;; ============================================================================
 
 (defn initialize-system
   "Initialize system with configuration"
@@ -141,9 +139,6 @@
             (reports/generate-txt-report analysis *out*)
             nil))))))
 
-;; ============================================================================
-;; Special Commands
-;; ============================================================================
 
 (defn export-default-config
   "Export default configuration to file"
@@ -161,9 +156,6 @@
       (println (format "\n[ERROR] Failed to export configuration: %s\n" (.getMessage e)))
       1)))
 
-;; ============================================================================
-;; Main Function
-;; ============================================================================
 
 (defn -main
   "Application entry point"
@@ -189,7 +181,7 @@
               input-file (:input options)]
 
           ;; Check if file exists
-          (when-not (.exists (clojure.java.io/file input-file))
+          (when-not (.exists (io/file input-file))
             (log/error "File not found: %s" input-file)
             (println (format "\n[ERROR] File not found: %s\n" input-file))
             (System/exit 1))
@@ -225,9 +217,6 @@
             (.printStackTrace e))
           (System/exit 1))))))
 
-;; ============================================================================
-;; REPL Helper Functions
-;; ============================================================================
 
 (defn analyze-file
   "Helper function for REPL usage

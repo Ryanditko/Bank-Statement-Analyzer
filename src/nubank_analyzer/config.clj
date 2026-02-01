@@ -5,9 +5,6 @@
             [clojure.java.io :as io]
             [clojure.pprint :as pprint]))
 
-;; ============================================================================
-;; Default Configuration
-;; ============================================================================
 
 (def default-config
   {:app {:name "Nubank Analyzer"
@@ -125,9 +122,6 @@
              :file "logs/nubank-analyzer.log"
              :format :pretty}})
 
-;; ============================================================================
-;; Funções de Configuração
-;; ============================================================================
 
 (defn load-config
   "Carrega configuração de arquivo EDN, faz merge com padrões"
@@ -138,7 +132,7 @@
         (merge-with merge default-config user-config))
       default-config)
     (catch Exception e
-      (println "⚠️  Erro ao carregar config, usando padrões:" (.getMessage e))
+      (println "⚠️  Error loading config, using defaults:" (.getMessage e))
       default-config)))
 
 (defn save-config
@@ -149,21 +143,21 @@
     (spit file-path (with-out-str (pprint/pprint config)))
     true
     (catch Exception e
-      (println "❌ Erro ao salvar config:" (.getMessage e))
+      (println "❌ Error saving config:" (.getMessage e))
       false)))
 
 (defn get-category-config
-  "Retorna configuração de uma categoria específica"
+  "Returns configuration for a specific category"
   [config category-name]
   (get-in config [:categories category-name]))
 
 (defn get-all-categories
-  "Retorna lista de todas as categorias configuradas"
+  "Returns list of all configured categories"
   [config]
   (keys (:categories config)))
 
 (defn validate-config
-  "Valida estrutura da configuração"
+  "Validate configuration structure"
   [config]
   (and (map? config)
        (contains? config :app)
@@ -171,12 +165,12 @@
        (every? map? (vals (:categories config)))))
 
 (defn get-app-version
-  "Retorna versão da aplicação"
+  "Returns application version"
   [config]
   (get-in config [:app :version]))
 
 (defn generate-default-config-file
-  "Gera arquivo de configuração padrão para o usuário customizar"
+  "Generate default configuration file for user customization"
   [output-path]
   (save-config default-config output-path))
 

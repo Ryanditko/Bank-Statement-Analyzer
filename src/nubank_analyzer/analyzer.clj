@@ -3,17 +3,13 @@
   (:require [clojure.string :as str]
             [nubank-analyzer.logger :as log]))
 
-;; ============================================================================
-;; Categorization
-;; ============================================================================
-
 (defn categorize-transaction
   "Categorize a transaction based on description and keywords"
   [transaction categories]
   (let [description (str/lower-case (or (:description transaction) ""))]
     (or (some (fn [[category-name config]]
                 (when (some #(str/includes? description (str/lower-case %))
-                           (:keywords config))
+                            (:keywords config))
                   category-name))
               categories)
         "Others")))
@@ -28,10 +24,6 @@
                          transactions)]
     (log/info "Categorization complete")
     categorized))
-
-;; ============================================================================
-;; Temporal Analysis
-;; ============================================================================
 
 (defn extract-month-year
   "Extract month/year from ISO date"
@@ -52,10 +44,6 @@
                   :year (when date (subs date 0 4))
                   :month-num (when date (Integer/parseInt (subs date 5 7))))))
        transactions))
-
-;; ============================================================================
-;; Basic Statistics
-;; ============================================================================
 
 (defn calculate-basic-stats
   "Calculate basic statistics from a list of values"
@@ -84,10 +72,6 @@
        :std-dev std-dev
        :variance variance})))
 
-;; ============================================================================
-;; Period Analysis
-;; ============================================================================
-
 (defn analyze-by-month
   "Analyze transactions grouped by month"
   [transactions]
@@ -109,12 +93,8 @@
                   stats (calculate-basic-stats (map :amount txs))]
               [category {:transactions-count (count txs)
                          :stats (assoc stats
-                                      :percentage (* 100 (/ category-total total-amount)))
+                                       :percentage (* 100 (/ category-total total-amount)))
                          :merchants (frequencies (map :description txs))}])))))
-
-;; ============================================================================
-;; Transaction Grouping
-;; ============================================================================
 
 (defn group-by-description
   "Group transactions by description for analysis"
@@ -126,10 +106,6 @@
   [transaction]
   [(extract-month-year (:date transaction))
    (str/lower-case (:description transaction))])
-
-;; ============================================================================
-;; Top Expenses
-;; ============================================================================
 
 (defn find-top-expenses
   "Find top N expenses"
@@ -143,10 +119,6 @@
           (take n)
           (map #(assoc % :percentage-of-total
                        (* 100 (/ (:abs-amount %) total-amount))))))))
-
-;; ============================================================================
-;; Recurring Transactions
-;; ============================================================================
 
 (defn find-recurring-transactions
   "Find recurring transactions (appear in multiple months)"
@@ -166,29 +138,21 @@
             :total-amount (reduce + (map :amount txs))})
          recurring)))
 
-;; ============================================================================
-;; Duplicate Detection
-;; ============================================================================
-
 (defn find-duplicates
   "Find potential duplicate transactions"
   [transactions threshold-hours]
   (log/info "Detecting duplicate transactions...")
   (let [sorted (sort-by :date transactions)
         duplicates (atom [])]
-    
+
     (doseq [[tx1 tx2] (partition 2 1 sorted)]
       (when (and (= (:description tx1) (:description tx2))
                  (= (:amount tx1) (:amount tx2))
                  (= (:date tx1) (:date tx2)))
         (swap! duplicates conj [tx1 tx2])))
-    
+
     (log/info "Found %d potential duplicates" (count @duplicates))
     @duplicates))
-
-;; ============================================================================
-;; Merchant Analysis
-;; ============================================================================
 
 (defn analyze-merchants
   "Analyze spending by merchant"
@@ -202,10 +166,6 @@
                             by-merchant)]
     {:by-total (take 20 (sort-by :total merchant-stats))
      :by-frequency (take 20 (sort-by :count > merchant-stats))}))
-
-;; ============================================================================
-;; Trend Analysis
-;; ============================================================================
 
 (defn calculate-trend
   "Calculate spending trend over months"
@@ -239,49 +199,41 @@
     {:monthly-totals monthly-totals
      :trend (calculate-trend by-month)}))
 
-;; ============================================================================
-;; Filtering
-;; ============================================================================
-
 (defn filter-transactions
   "Filter transactions based on criteria"
   [transactions filters]
   (cond->> transactions
     (:category filters)
     (filter #(= (:category %) (:category filters)))
-    
+
     (:min-amount filters)
     (filter #(>= (Math/abs (:amount %)) (:min-amount filters)))
-    
+
     (:max-amount filters)
     (filter #(<= (Math/abs (:amount %)) (:max-amount filters)))
-    
+
     (:start-date filters)
     (filter #(>= (:date %) (:start-date filters)))
-    
+
     (:end-date filters)
     (filter #(<= (:date %) (:end-date filters)))
-    
+
     (:description-pattern filters)
     (filter #(str/includes? (str/lower-case (:description %))
-                           (str/lower-case (:description-pattern filters))))))
-
-;; ============================================================================
-;; Complete Analysis
-;; ============================================================================
+                            (str/lower-case (:description-pattern filters))))))
 
 (defn perform-complete-analysis
   "Perform complete analysis on transactions"
   [transactions config]
   (log/info "Starting complete analysis...")
   (log/info "Total transactions: %d" (count transactions))
-  
+
   (let [categories (:categories config)
         categorized (add-categories transactions categories)
         with-temporal (add-temporal-fields categorized)
         amounts (map :amount with-temporal)
         expenses (filter #(< (:amount %) 0) with-temporal)
-        
+
         general-stats (calculate-basic-stats amounts)
         by-month (analyze-by-month with-temporal)
         by-category (analyze-by-category with-temporal)
@@ -291,9 +243,9 @@
                                     (get-in config [:analysis :duplicate-threshold-hours] 24))
         trends (analyze-trends with-temporal)
         merchants (analyze-merchants with-temporal)]
-    
+
     (log/info "Analysis complete!")
-    
+
     {:general {:stats general-stats
                :total-transactions (count with-temporal)
                :total-expenses (count expenses)
@@ -306,24 +258,3 @@
      :trends trends
      :merchants merchants
      :transactions with-temporal}))
-
-(comment
-  ;; Example usage
-  
-  ;; Sample transactions
-  (def sample-txs
-    [{:date "2025-10-15" :description "IFOOD" :amount -45.50}
-     {:date "2025-10-14" :description "Uber" :amount -28.30}
-     {:date "2025-10-13" :description "Netflix" :amount -44.90}])
-  
-  ;; Categorize
-  (add-categories sample-txs (:categories config/default-config))
-  
-  ;; Complete analysis
-  (def analysis (perform-complete-analysis sample-txs config/default-config))
-  
-  ;; Filter transactions
-  (filter-transactions sample-txs {:category "Food" :min-amount 50})
-  
-  ;; Top expenses
-  (find-top-expenses sample-txs 10))
