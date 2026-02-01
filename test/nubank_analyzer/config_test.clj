@@ -14,7 +14,7 @@
   (testing "Application metadata"
     (let [app (:app config/default-config)]
       (is (= "Nubank Analyzer" (:name app)))
-      (is (= "1.0.0" (:version app)))
+      (is (= "2.0.0" (:version app)))
       (is (string? (:author app))))))
 
 (deftest test-categories-config
