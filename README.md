@@ -1,8 +1,10 @@
 # Bank Statement Analyzer
 
-> **A Clojure-based tool for analyzing Nubank bank statements**
+> **A Clojure-based tool for analyzing bank statements**
+>
+> **⚠️ Disclaimer:** This is an independent educational project demonstrating data analysis with Clojure. It is **NOT** affiliated with, endorsed by, or officially associated with Nubank in any way. This tool uses Nubank's CSV export format as a practical example for financial data analysis.
 
-Automatically categorize transactions, detect duplicates, and generate detailed financial reports from your Nubank CSV exports.
+Automatically categorize transactions, detect duplicates, and generate detailed financial reports from CSV bank statement exports.
 
 ---
 
@@ -329,6 +331,16 @@ Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 ## License
 
 Free for personal and educational use.
+
+---
+
+## Important Notes
+
+**This is an independent educational project:**
+- Not affiliated with, endorsed by, or officially associated with Nubank
+- Nubank's name and CSV format are used solely as practical examples for financial data analysis
+- This tool can be adapted to work with CSV exports from any bank or financial institution
+- All trademarks and registered trademarks are the property of their respective owners
 
 ---
 
