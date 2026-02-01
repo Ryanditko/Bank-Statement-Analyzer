@@ -7,9 +7,6 @@
   (:import [java.time LocalDate]
            [java.time.format DateTimeFormatter DateTimeParseException]))
 
-;; ============================================================================
-;; Transaction Specs
-;; ============================================================================
 
 (s/def ::date (s/and string? #(not (str/blank? %))))
 (s/def ::description (s/and string? #(not (str/blank? %))))
@@ -24,9 +21,6 @@
 (s/def ::transactions
   (s/coll-of ::transaction :kind vector? :min-count 0))
 
-;; ============================================================================
-;; Configuration Specs
-;; ============================================================================
 
 (s/def ::name string?)
 (s/def ::version string?)
@@ -42,9 +36,6 @@
 (s/def ::config
   (s/keys :req-un [::app ::categories]))
 
-;; ============================================================================
-;; Date Validation
-;; ============================================================================
 
 (defn valid-date-format?
   "Check if string is a valid date in a known format"
@@ -58,21 +49,18 @@
          formats)))
 
 (defn validate-date
-  "Valida e retorna erros de data"
+  "Validate and return date errors"
   [date-str formats]
   (cond
     (str/blank? date-str)
-    {:valid? false :error "Data vazia"}
+    {:valid? false :error "Empty date"}
 
     (not (valid-date-format? date-str formats))
-    {:valid? false :error (str "Formato de data inválido: " date-str)}
+    {:valid? false :error (str "Invalid date format: " date-str)}
 
     :else
     {:valid? true}))
 
-;; ============================================================================
-;; Monetary Value Validation
-;; ============================================================================
 
 (defn valid-amount?
   "Check if monetary value is valid"
@@ -100,30 +88,27 @@
     :else
     {:valid? true}))
 
-;; ============================================================================
-;; Transaction Validation
-;; ============================================================================
 
 (defn validate-transaction
   "Validate a complete transaction"
   [transaction date-formats]
   (let [errors (atom [])]
 
-    ;; Validar data
+    ;; Validate date
     (let [date-result (validate-date (:date transaction) date-formats)]
       (when-not (:valid? date-result)
         (swap! errors conj (:error date-result))))
 
-    ;; Validar descrição
+    ;; Validate description
     (when (str/blank? (:description transaction))
-      (swap! errors conj "Descrição vazia"))
+      (swap! errors conj "Empty description"))
 
-    ;; Validar amount
+    ;; Validate amount
     (let [amount-result (validate-amount (:amount transaction))]
       (when-not (:valid? amount-result)
         (swap! errors conj (:error amount-result))))
 
-    ;; Retornar resultado
+    ;; Return result
     (if (empty? @errors)
       {:valid? true}
       {:valid? false :errors @errors})))
@@ -150,9 +135,6 @@
      :invalid-transactions invalid
      :all-valid? (empty? invalid)}))
 
-;; ============================================================================
-;; CSV Validation
-;; ============================================================================
 
 (defn validate-csv-headers
   "Validate if CSV has required headers"
@@ -166,33 +148,30 @@
 
     (cond
       (not has-date?)
-      {:valid? false :error "Coluna de data não encontrada (esperado: 'date' ou 'data')"}
+      {:valid? false :error "Date column not found (expected: 'date' or 'data')"}
 
       (not has-desc?)
-      {:valid? false :error "Coluna de descrição não encontrada"}
+      {:valid? false :error "Description column not found"}
 
       (not has-amount?)
-      {:valid? false :error "Coluna de valor não encontrada (esperado: 'amount' ou 'valor')"}
+      {:valid? false :error "Amount column not found (expected: 'amount' or 'valor')"}
 
       :else
       {:valid? true})))
 
 (defn validate-csv-structure
-  "Valida estrutura básica do CSV"
+  "Validate basic CSV structure"
   [csv-data]
   (cond
     (empty? csv-data)
-    {:valid? false :error "Arquivo CSV vazio"}
+    {:valid? false :error "Empty CSV file"}
 
     (< (count csv-data) 2)
-    {:valid? false :error "CSV deve ter pelo menos header e uma linha de dados"}
+    {:valid? false :error "CSV must have at least header and one data row"}
 
     :else
     (validate-csv-headers (first csv-data))))
 
-;; ============================================================================
-;; Suspicious Value Validation
-;; ============================================================================
 
 (defn detect-outliers
   "Detect outlier values using IQR method"
@@ -226,9 +205,6 @@
      :outlier-bounds {:lower (:lower-bound outlier-analysis)
                       :upper (:upper-bound outlier-analysis)}}))
 
-;; ============================================================================
-;; Sanitization Functions
-;; ============================================================================
 
 (defn sanitize-description
   "Remove special characters and normalize description"
@@ -250,9 +226,6 @@
   [transactions]
   (map sanitize-transaction transactions))
 
-;; ============================================================================
-;; Validation Reports
-;; ============================================================================
 
 (defn generate-validation-report
   "Generate complete validation report"

@@ -3,9 +3,6 @@
   (:require [clojure.string :as str]
             [clojure.tools.cli :refer [parse-opts]]))
 
-;; ============================================================================
-;; CLI Options Definition
-;; ============================================================================
 
 (def cli-options
   [["-i" "--input FILE" "Input CSV transactions file (required)"
@@ -55,9 +52,6 @@
    ["-h" "--help" "Display this help message"
     :default false]])
 
-;; ============================================================================
-;; Help Messages
-;; ============================================================================
 
 (defn usage-banner []
   (str/join "\n"
@@ -122,9 +116,6 @@
        (str/join "\n" (map #(str "  - " %) errors))
        "\n\nUse -h or --help to see available options.\n"))
 
-;; ============================================================================
-;; Argument Validation
-;; ============================================================================
 
 (defn validate-args
   "Validate command-line arguments"
@@ -154,9 +145,6 @@
       :else
       {:options options :ok? true})))
 
-;; ============================================================================
-;; Filter Construction
-;; ============================================================================
 
 (defn build-filters
   "Build filter map based on CLI options"
@@ -167,9 +155,6 @@
     (:max-amount options) (assoc :max-amount (:max-amount options))
     (:month options) (assoc :month (:month options))))
 
-;; ============================================================================
-;; Output Format Determination
-;; ============================================================================
 
 (defn determine-output-format
   "Determine output format based on options"
@@ -199,9 +184,6 @@
             ext (name format)]
         (str base-name "-report." ext))))
 
-;; ============================================================================
-;; Message Formatting
-;; ============================================================================
 
 (defn format-success-message
   "Format success message"

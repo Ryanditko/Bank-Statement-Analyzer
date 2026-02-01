@@ -9,9 +9,6 @@
   (:import [java.time LocalDate]
            [java.time.format DateTimeFormatter DateTimeParseException]))
 
-;; ============================================================================
-;; Monetary Value Parsing
-;; ============================================================================
 
 (defn parse-amount
   "Convert monetary value string to double number.
@@ -52,9 +49,6 @@
         (log/warn "Error parsing value '%s': %s" s (.getMessage e))
         nil))))
 
-;; ============================================================================
-;; Date Parsing
-;; ============================================================================
 
 (defn try-parse-date
   "Try to parse date with a specific format"
@@ -62,7 +56,7 @@
   (try
     (let [formatter (DateTimeFormatter/ofPattern format-str)
           date (LocalDate/parse date-str formatter)]
-      (.format date (DateTimeFormatter/ISO_LOCAL_DATE)))
+      (.format date DateTimeFormatter/ISO_LOCAL_DATE))
     (catch DateTimeParseException _ nil)))
 
 (defn parse-date
@@ -78,9 +72,6 @@
             (log/debug "Date '%s' could not be parsed with known formats" trimmed)
             trimmed)))))
 
-;; ============================================================================
-;; CSV Header Parsing
-;; ============================================================================
 
 (defn normalize-header
   "Normalize CSV column name"
@@ -120,16 +111,13 @@
       (keyword normalized))))
 
 (defn build-field-mapping
-  "Cria mapeamento de índices de coluna para campos"
+  "Create mapping from column indices to fields"
   [headers]
   (into {}
         (map-indexed (fn [idx header]
                        [(map-header-to-field header) idx])
                      headers)))
 
-;; ============================================================================
-;; CSV Row Parsing
-;; ============================================================================
 
 (defn parse-csv-row
   "Parse a CSV row using field mapping"
@@ -151,12 +139,9 @@
          :type (get-field :type)}))
 
     (catch Exception e
-      (log/warn "Erro ao parsear linha: %s" (.getMessage e))
+      (log/warn "Error parsing row: %s" (.getMessage e))
       nil)))
 
-;; ============================================================================
-;; Leitura de CSV
-;; ============================================================================
 
 (defn read-csv-file
   "Read CSV file and return [headers rows]"
@@ -184,9 +169,6 @@
       (log/error "Error reading CSV: %s" (.getMessage e))
       (throw e))))
 
-;; ============================================================================
-;; Complete Parsing Pipeline
-;; ============================================================================
 
 (defn parse-transactions
   "Complete pipeline: read CSV and parse transactions
@@ -238,9 +220,6 @@
                :success-rate (* 100.0 (/ valid-count (max total-rows 1)))}
        :field-mapping field-mapping})))
 
-;; ============================================================================
-;; Multiple File Parsing
-;; ============================================================================
 
 (defn parse-multiple-files
   "Parse multiple CSV files and combine results"
@@ -262,9 +241,6 @@
     {:transactions all-transactions
      :stats combined-stats}))
 
-;; ============================================================================
-;; Export Utilities
-;; ============================================================================
 
 (defn transactions-to-csv
   "Export transactions to CSV format"
@@ -282,7 +258,7 @@
                                    (:categoria tx "")
                                    (:month tx "")])
                                 transactions))))
-    (log/info "CSV exportado com sucesso")
+    (log/info "CSV exported successfully")
     {:success true :path output-path}
 
     (catch Exception e
